@@ -18,7 +18,7 @@ var height = svgHeight - margin.top - margin.bottom;
 //Create SVG wrapper
 
 var svg = d3
-  .select(".scatter")
+  .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -105,12 +105,11 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   return circlesGroup;
 }
 
-//Load data
 
 // Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(function(data, err) {
     if (err) throw err;
-  
+    
     // parse data
     data.forEach(function(d) {
       d.obesity = +d.obesity;
@@ -152,7 +151,7 @@ d3.csv("assets/data/data.csv").then(function(data, err) {
    .attr("fill", "pink")
    .attr("opacity", ".5");
 
- // Create group for two x-axis labels
+ // Create group for three x-axis labels
  var labelsGroup = chartGroup.append("g")
    .attr("transform", `translate(${width / 2}, ${height + 20})`);
 
@@ -172,8 +171,8 @@ d3.csv("assets/data/data.csv").then(function(data, err) {
 
 var incomeLabel = labelsGroup.append("text")
    .attr("x", 0)
-   .attr("y", 40)
-   .attr("value", "age") // value to grab for event listener
+   .attr("y", 60)
+   .attr("value", "income") // value to grab for event listener
    .classed("inactive", true)
    .text("Household Income (Median)");
 
