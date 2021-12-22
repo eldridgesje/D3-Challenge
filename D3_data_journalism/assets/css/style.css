@@ -3,6 +3,7 @@
   border: 1px solid #e3e3e3;
 }
 
+
 /* Sticky Footer rules (https://getbootstrap.com/examples/sticky-footer/) */
 html {
   position: relative;
@@ -28,4 +29,11 @@ body {
 #footer p {
   margin: 0;
   font-size: 16px;
+}
+
+
+.state {
+  font-size: 8px;
+  font-weight: bold;
+  color: #fff;
 }
