@@ -97,81 +97,62 @@ function renderCircles(circlesGroup, chosenXAxis, xLinearScale, chosenYAxis, yLi
       d.y = yLinearScale(d[chosenYAxis])
       return "translate(" + d.x + "," + d.y + ")";
     });
-  
-  console.log(chosenXAxis);
-  console.log(chosenYAxis)
-
+ 
   return circlesGroup;
 }
   
+// function used for updating circles group with new tooltip
+function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 
-// function renderLabelsX(textLabels, newXScale, chosenXAxis) {
+  var toolTip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([0, -20])
+    .html(function(d) {
+      var xlabel;
 
-//   textLabels.transition()
-//     .duration(1000)
-//     .attr("x", d => newXScale(d[chosenXAxis]))
+      var ylabel;
+    
+      if (chosenXAxis === "poverty") {
+        xlabel = "% in poverty";
+        xdata = d.poverty;
+      }
+      else if (chosenXAxis === "age") {
+        xlabel = " years median age";
+        xdata = d.age;
+      }
+      else {
+          xlabel = " dollars median household income"
+          xdata = d.income;
+        }
+    
+      if (chosenYAxis === "obesity") {
+        ylabel = "% obese";
+        ydata = d.obesity;
+      }
+      else if (chosenYAxis === "healthcare") {
+        ylabel = "% lacking health insurance";
+        ydata = d.healthcare;
+      }
+      else {
+          ylabel = "% smokers"
+          ydata = d.smokes;
+        }
+    
+      return (`${d.state} <br> ${ydata} ${ylabel} <br> ${xdata} ${xlabel}`);
+    });
 
-//   return textLabels;
-// }
+  circlesGroup.call(toolTip);
 
-// function renderCirclesY(circlesGroup, chosenYAxis) {
+  circlesGroup.on("mouseover", function(data) {
+    toolTip.show(data, this);
+  })
+    // onmouseout event
+    .on("mouseout", function(data, index) {
+      toolTip.hide(data, this);
+    });
 
-//   circlesGroup.transition()
-//     .duration(1000)
-//     .attr("transform", function(d) {
-//       d.x = xLinearScale(d[chosenXAxis]),
-//       d.y = yLinearScale(d[chosenYAxis])
-//       return "translate(" + d.x + "," + d.y + ")";
-//     });
-
-//   return circlesGroup;
-// }
-
-
-// function renderLabelsY(textLabels, newYScale, chosenYAxis) {
-
-//   textLabels.transition()
-//     .duration(1000)
-//     .attr("y", d => newYScale(d[chosenYAxis]))
-
-//   return textLabels;
-// }
-
-
-// // function used for updating circles group with new tooltip
-// function updateToolTip(chosenXAxis, circlesGroup) {
-
-//   var label;
-
-//   if (chosenXAxis === "poverty") {
-//     label = "In Poverty (%)";
-//   }
-//   else if (chosenXAxis === "age") {
-//     label = "Age (Median)";
-//   }chartGroup
-//   else {
-//       label = "Household Income (Median)"
-//   }
-
-//   var toolTip = d3.tip()
-//     .attr("class", "d3-tip")
-//     .offset([0, -20])
-//     .html(function(d) {
-//       return (`${d.abbr}`);
-//     });
-
-//   circlesGroup.call(toolTip);
-
-//   circlesGroup.on("mouseover", function(data) {
-//     toolTip.show(data, this);
-//   })
-//     // onmouseout event
-//     .on("mouseout", function(data, index) {
-//       toolTip.hide(data, this);
-//     });
-
-//   return circlesGroup;
-// }
+  return circlesGroup;
+}
 
 
 // Retrieve data from the CSV file and execute everything below
@@ -229,13 +210,11 @@ d3.csv("assets/data/data.csv").then(function(data, err) {
   
  circlesGroup.append("text")
    .attr("text-anchor", "middle")
+   .attr("dominant-baseline", "central")
    .attr("class", "state")
+   .style("fill", "white")
    .text(d => d.abbr);
   
-  console.log(circlesGroup);
-  console.log(chosenXAxis);
-  console.log(chosenYAxis)  
-
  // Create group for three x-axis labels
  var labelsGroupX = chartGroup.append("g")
    .attr("transform", `translate(${width / 2}, ${height + 20})`);
@@ -288,9 +267,7 @@ var healthcareLabel = labelsGroupY.append("text")
    .text("Lacks Health Insurance (%)");
 
  // updateToolTip function above csv import
-//  var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
-
-//  var textLabels = updateToolTip(chosenXAxis, textLabels);
+ var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
  // x axis labels event listener
  labelsGroupX.selectAll("text")
@@ -316,11 +293,8 @@ var healthcareLabel = labelsGroupY.append("text")
        // updates circles with new x values
        circlesGroup = renderCircles(circlesGroup, chosenXAxis, xLinearScale, chosenYAxis, yLinearScale);
 
-      //  // updates text labels with new x values
-      //  textLabels = renderLabelsX(textLabels, xLinearScale, chosenXAxis);
-
-      //  // updates tooltips with new info
-      //  circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+       // updates tooltips with new info
+       circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
       //  changes classes to change bold text
        if (chosenXAxis === "age") {
@@ -385,11 +359,8 @@ var healthcareLabel = labelsGroupY.append("text")
        // updates circles with new values
        circlesGroup = renderCircles(circlesGroup, chosenXAxis, xLinearScale, chosenYAxis, yLinearScale);
 
-      //  // updates text labels with new values
-      //  textLabels = renderLabelsY(textLabels, yLinearScale, chosenYAxis);
-
       //  // updates tooltips with new info
-      //  circlesGroup = updateToolTip(chosenYAxis, circlesGroup);
+       circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
        // changes classes to change bold text
        if (chosenYAxis === "obesity") {
